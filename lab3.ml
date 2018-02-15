@@ -94,7 +94,7 @@ in this new variant type.
 
 type color =
 | Simple of color_label
-| Channels of int * int * int ;;
+| RGB of int * int * int ;;
 
 (* Note that there is an important assumption about the RGB values
 that determine whether a color is valid or not. The RGB type contains
@@ -126,7 +126,7 @@ let valid_range x =
 let valid_rgb (col : color) = 
   match col with
   | Simple _ -> col
-  | Channels (x,y,z) ->
+  | RGB (x,y,z) ->
   if valid_range x && valid_range y && valid_range z then col
   else raise (Invalid_Color "Invalid Color") ;;
 
@@ -137,7 +137,7 @@ to verify the invariant.
 ......................................................................*)
 
 let make_color x y z = 
-  if valid_range x && valid_range y && valid_range z then Channels (x,y,z)
+  if valid_range x && valid_range y && valid_range z then RGB (x,y,z)
   else raise (Invalid_Color "range must be in [0, 255]") ;;
 
 (*......................................................................
