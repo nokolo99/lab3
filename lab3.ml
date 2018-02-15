@@ -125,7 +125,7 @@ let valid_range x =
 
 let valid_rgb (col : color) = 
   match col with
-  | Simple x -> col
+  | Simple _ -> col
   | Channels (x,y,z) ->
   if valid_range x && valid_range y && valid_range z then col
   else raise (Invalid_Color "Invalid Color") ;;
