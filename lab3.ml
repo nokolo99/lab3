@@ -56,7 +56,8 @@ be any of the following options: red, crimson, orange, yellow, green,
 blue, indigo, or violet.
 ......................................................................*)
 
-type color_label = NotImplemented ;;
+type color_label = Red | Crimson | Orange | Yellow | Green |
+Blue | Indigo | Violet ;;
 
 (* You've just defined a new variant type! But this is an overly
 simplistic representation of colors. Let's make it more usable.
@@ -91,7 +92,9 @@ channels. You'll want to use Simple and RGB as the value constructors
 in this new variant type.
 ......................................................................*)
 
-type color = NotImplemented ;;
+type color =
+| Simple of color_label
+| Channels of int * int * int ;;
 
 (* Note that there is an important assumption about the RGB values
 that determine whether a color is valid or not. The RGB type contains
@@ -117,8 +120,15 @@ an Invalid_Color exception with a useful message.
 
 exception Invalid_Color of string ;;
 
-let valid_rgb = 
-  fun _ -> failwith "valid_rgb not implemented" ;;
+let valid_range x =
+  if x >= 0 && x < 256 then true else false ;;
+
+let valid_rgb (col : color) = 
+  match col with
+  | Simple x -> col
+  | Channels (x,y,z) ->
+  if valid_range x && valid_range y && valid_range z then col
+  else raise (Invalid_Color "Invalid Color") ;;
 
 (*......................................................................
 Exercise 3: Write a function, make_color, that accepts three integers
@@ -126,8 +136,9 @@ for the channel values and returns a value of the color type. Be sure
 to verify the invariant.
 ......................................................................*)
 
-let make_color = 
-  fun _ -> failwith "make_color not implemented" ;;
+let make_color x y z = 
+  if valid_range x && valid_range y && valid_range z then Channels (x,y,z)
+  else raise (Invalid_Color "range must be in [0, 255]") ;;
 
 (*......................................................................
 Exercise 4: Write a function, convert_to_rgb, that accepts a color and
@@ -205,7 +216,8 @@ should be. Then, consider the implications of representing the overall
 data type as a tuple or a record.
 ......................................................................*)
 
-type date = NotImplemented ;;
+type date = {year : int; month : int; day : int} ;;
+
 
 (* After you've thought it through, look up the Date module in the
 OCaml documentation to see how this was implemented there. If you
@@ -247,8 +259,23 @@ the invariant is violated, and returns the date if valid.
 
 exception Invalid_Date of string ;;
 
-let valid_date = 
-  fun _ -> failwith "valid_date not implemented" ;;
+(* let thirtyone = [1;3;5;7;8;20;12] ;;
+
+let thirty = [4;6;9;11] ;;
+
+let twentyeight = [2] ;;
+
+let match_month lst m =
+  List.filter m lst ;;
+
+let valid_date (y : int) (m : int) (d : int) : date = 
+  if y > 0 then
+     if m <= 12 && m <= 1 then
+       if d <=
+
+   else raise (Invalid_Date "Month must be positive")
+else raise (Invalid_Date "Year must be positive")
+   ;; *)
 
 
 (*======================================================================
@@ -262,7 +289,7 @@ Exercise 10: Define a person record type. Use the field names "name",
 "favorite", and "birthdate".
 ......................................................................*)
 
-type person = NotImplemented ;;
+type person = {name : string ; favorite : color ; birthdate : date} ;;
 
 (* Let's now do something with these person values. We'll create a
 data structure that allows us to model simple familial relationships.
@@ -301,8 +328,8 @@ ensure the invariants are preserved for color and date, use them here
 as well.
 ......................................................................*)
 
-let new_child = 
-  fun _ -> failwith "new_child not implemented" ;;
+let new_child (name : string) (fav : color) (date : date) : family = 
+  Single ({name = name; favorite = fav; birthdate = date}) ;;
 
 (*......................................................................
 Exercise 12: Write a function that allows a person to marry in to a
@@ -313,8 +340,10 @@ is already made up of a married couple?
 
 exception Family_Trouble of string ;;
 
-let marry = 
-  fun _ -> failwith "marry not implemented" ;;
+let marry (person : person) (fam : family) : family = 
+  match fam with
+  | Single (x)-> Family (x, person, [])
+  | Family (_,_,_) -> raise (Family_Trouble "Don't homewreck") ;;
 
 (*......................................................................
 Exercise 13: Write a function that accepts two families, and returns
